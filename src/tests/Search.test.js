@@ -1,10 +1,10 @@
-import { SearchPageObject } from './SearchPageObject'
-import products from '../assets/products.json'
+import { SearchPageObject } from './SearchPageObject';
+import products from '../assets/products.json';
 
 describe('Search component', () => {
   it('should display label including number of items', async () => {
     // given
-    const search = new SearchPageObject({ products })
+    const search = new SearchPageObject({ products });
 
     // then
     expect(search.getProductListHeader()).toBe('Product List (30 items)');
@@ -12,7 +12,7 @@ describe('Search component', () => {
 
   it('should display product row cells', async () => {
     // given
-    const search = new SearchPageObject({ products })
+    const search = new SearchPageObject({ products });
 
     // then
     const firstRow = search.getProductRowCells(0);
@@ -21,12 +21,12 @@ describe('Search component', () => {
 
   it('should display all columns by default', async () => {
     // given
-    const search = new SearchPageObject({ products })
+    const search = new SearchPageObject({ products });
 
     // then
-    const toggleColumnsLabels = search.getToggleColumnsLabels()
+    const toggleColumnsLabels = search.getToggleColumnsLabels();
     expect(toggleColumnsLabels).toEqual(['id', 'name', 'department', 'price', 'currency']);
-  })
+  });
 
   it.each([
     [2, 10, 100, 'correct'],
@@ -40,11 +40,11 @@ describe('Search component', () => {
     [0, 0, 0, 'incorrect (price=0)'],
   ])('should display %d products after filtering price between %d and %d (%s)', async (count, priceFrom, priceTo) => {
     // given
-    const search = new SearchPageObject({ products })
+    const search = new SearchPageObject({ products });
 
     // when
-    await search.fillPriceFromInput(priceFrom)
-    await search.fillPriceToInput(priceTo)
+    await search.fillPriceFromInput(priceFrom);
+    await search.fillPriceToInput(priceTo);
 
     // then
     expect(search.displayedRowsCount()).toBe(count);

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import '../styles/Search.css';
 import { ToggleColumns } from './ToggleColumns';
@@ -22,28 +22,32 @@ export const Search = (props) => {
     setPrice((prevState) => ({ ...prevState, [name]: value }));
   };
 
-  const onCheckboxClick = useCallback((name, checked) => {
+  const onCheckboxClick = (name, checked) => {
     // TODO: implement checkbox click handler
     setColumns((prevState) => ({ ...prevState, [name]: checked }));
-  }, []);
-
-  const filterProducts = () => {
-    const filter = products.filter(
-      (product) =>
-        parseInt(product.price) >= parseInt(price.priceFrom) && parseInt(product.price) <= parseInt(price.priceFrom)
-    );
-    setProducts(filter);
   };
 
+  const filterProducts = useMemo(() => {
+    const filter = props.products.filter((product) => {
+      const checkNan = isNaN(parseFloat(price.priceTo)) ? Infinity : parseFloat(price.priceTo);
+      return parseFloat(product.price) >= parseFloat(price.priceFrom) && parseFloat(product.price) <= checkNan;
+    });
+    return filter;
+  }, [price, props]);
+
   useEffect(() => {
-    setProducts(props.products);
-  }, [props]);
+    if (price.priceFrom === '') {
+      setPrice((prevState) => ({ ...prevState, priceFrom: 0 }));
+    } else if (price.priceTo === '') {
+      setPrice((prevState) => ({ ...prevState, priceTo: Infinity }));
+    }
+  }, [price]);
 
   return (
     <div className="Products">
       <FilterForm priceFrom={price.priceFrom} priceTo={price.priceTo} onPriceInputChange={onPriceInputChange} />
       <ToggleColumns onCheckboxClick={onCheckboxClick} columns={columns} />
-      <ProductList products={products} columns={columns} />
+      <ProductList products={filterProducts} columns={columns} />
     </div>
   );
 };
