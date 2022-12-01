@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react';
 
 import '../styles/Search.css';
 import { ToggleColumns } from './ToggleColumns';
@@ -16,35 +16,36 @@ export const Search = (props) => {
     currency: true,
   });
 
-  const onPriceInputChange = (name, value) => {
-    // TODO: implement price change handler
-  }
+  const [products, setProducts] = useState([]);
 
-  const onCheckboxClick = (name, checked) => {
+  const onPriceInputChange = (name, value) => {
+    setPrice((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  const onCheckboxClick = useCallback((name, checked) => {
     // TODO: implement checkbox click handler
-  }
+    setColumns((prevState) => ({ ...prevState, [name]: checked }));
+  }, []);
 
   const filterProducts = () => {
-    // TODO: implement handler for filtering products by price range
-  }
+    const filter = products.filter(
+      (product) =>
+        parseInt(product.price) >= parseInt(price.priceFrom) && parseInt(product.price) <= parseInt(price.priceFrom)
+    );
+    setProducts(filter);
+  };
 
-  let displayedProducts = [];
+  useEffect(() => {
+    setProducts(props.products);
+  }, [props]);
+
   return (
     <div className="Products">
-      <FilterForm
-        priceFrom={''}
-        priceTo={''}
-        onPriceInputChange={''} />
-
-      <ToggleColumns
-        onCheckboxClick={''}
-        columns={''} />
-
-      <ProductList
-        products={displayedProducts}
-        columns={''} />
+      <FilterForm priceFrom={price.priceFrom} priceTo={price.priceTo} onPriceInputChange={onPriceInputChange} />
+      <ToggleColumns onCheckboxClick={onCheckboxClick} columns={columns} />
+      <ProductList products={products} columns={columns} />
     </div>
   );
-}
+};
 
 export default Search;
